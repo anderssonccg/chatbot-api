@@ -1,12 +1,12 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from models import User
-from db import init_db, get_session
+from config.db import init_db
+from models.user import User
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    init_db()
+    await init_db()
     yield
 
 app = FastAPI(lifespan=lifespan)

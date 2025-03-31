@@ -12,7 +12,7 @@ class UserBase(SQLModel):
     fullname: str
     email: str
     role: UserRole
-    is_active: bool
+    is_active: bool = False
 
 class UserCreate(UserBase):
     password: str
@@ -23,3 +23,5 @@ class User(UserBase, table=True):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow, sa_column_kwargs={"onupdate": datetime.utcnow})
     
+class UserRead(UserBase):
+    id: int
