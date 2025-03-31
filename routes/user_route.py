@@ -1,12 +1,15 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session, select
-from models.user import User, UserCreate
-from config.db import get_session
-from typing import List
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from passlib.context import CryptContext
+from fastapi import APIRouter, Depends
+from models.user import UserCreate, UserRead
+from config.db import SessionDep
+from repositories.user_repository import UserRepository
+from services.user_service import UserService
 
-router = APIRouter()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+router = APIRouter(prefix="/users", tags=["users"])
 
+def get_user_service(session: SessionDep) -> UserService:
+    user_repository = UserRepository(session)
+    return UserService(user_repository)
+
+@router.post("/register", response_model=UserRead)
+async def create(user_data: UserCreate, service: UserService = Depends(get_user_service)):
+    return await service.create_user(user_data)

@@ -11,8 +11,6 @@ class UserRole(str, Enum):
 class UserBase(SQLModel):
     fullname: str
     email: str
-    role: UserRole
-    is_active: bool = False
 
 class UserCreate(UserBase):
     password: str
@@ -20,6 +18,8 @@ class UserCreate(UserBase):
 class User(UserBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     password: str
+    role: Optional[UserRole] = Field(default="estudiante")
+    is_active: Optional[bool] = Field(default=True)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow, sa_column_kwargs={"onupdate": datetime.utcnow})
     
