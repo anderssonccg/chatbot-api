@@ -25,3 +25,7 @@ class User(UserBase, table=True):
     
 class UserRead(UserBase):
     id: int
+    role: str
+    is_active: bool
+    created_at: datetime
+    updated_at: datetime

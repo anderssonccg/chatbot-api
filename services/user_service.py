@@ -1,12 +1,12 @@
 from typing import List, Optional
 from fastapi import HTTPException, status
+from passlib.context import CryptContext
 from models.user import User, UserCreate, UserRead
 from repositories.user_repository import UserRepository
-from passlib.context import CryptContext
+from services import auth_service
 
+crypt = CryptContext(schemes=["bcrypt"], deprecated="auto")
 class UserService:
-
-    crypt = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
     def __init__(self, user_repository: UserRepository):
         self.user_repository = user_repository
@@ -22,9 +22,28 @@ class UserService:
     async def create_user(self, user_data: UserCreate) -> UserRead:
         user = User.model_validate(user_data.model_dump())
         await self.validate_email(user.email)
-        user.password = self.crypt.hash(user.password)
+        user.password = crypt.hash(user.password)
         created_user = await self.user_repository.create(user)
         return UserRead.model_validate(created_user)
+    
+    async def auth_user(self, username: str, password: str) -> UserRead:
+        user = await self.user_repository.get_by_email(username)
+        if not user or not crypt.verify(password, user.password):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Credenciales incorrectas",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        return UserRead.model_validate(user)
+    
+    async def get_current_user(self, token: str):
+        id = auth_service.decode_token(token)
+        if id is None:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token invalido.")
+        user = await self.get_user_by_id(int(id))
+        if user is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario inexistente.")
+        return UserRead.model_validate(user)
 
     async def update_user(self, user_id: int, user_data: UserCreate) -> Optional[UserRead]:
         updated_user = await self.user_repository.update(user_id, user_data)
