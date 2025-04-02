@@ -20,6 +20,7 @@ class User(UserBase, table=True):
     password: str
     role: Optional[UserRole] = Field(default="estudiante")
     is_active: Optional[bool] = Field(default=True)
+    is_verified: Optional[bool] = Field(default=False)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow, sa_column_kwargs={"onupdate": datetime.utcnow})
     
@@ -27,5 +28,6 @@ class UserRead(UserBase):
     id: int
     role: str
     is_active: bool
+    is_verified: bool
     created_at: datetime
     updated_at: datetime

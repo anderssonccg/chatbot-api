@@ -34,6 +34,8 @@ class UserService:
                 detail="Credenciales incorrectas",
                 headers={"WWW-Authenticate": "Bearer"},
             )
+        if not user.is_verified:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Debes verificar tu correo para poder iniciar sesion")
         return UserRead.model_validate(user)
     
     async def get_current_user(self, token: str):
@@ -44,6 +46,21 @@ class UserService:
         if user is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario inexistente.")
         return UserRead.model_validate(user)
+
+    async def get_by_email(self, email: str) -> Optional[UserRead]:
+        return await self.user_repository.get_by_email(email)
+    
+    async def verify_email(self, token: str) -> Optional[UserRead]:
+        email = auth_service.decode_verification_token(token)
+        if not email:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Token inválido o expirado")
+        user = await self.user_repository.get_by_email(email)
+        if not user:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario inexistente")
+        if user.is_verified:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Su correo ya se ha verificado")
+        user.is_verified = True
+        return await self.user_repository.update(user.id, user)
 
     async def update_user(self, user_id: int, user_data: UserCreate) -> Optional[UserRead]:
         updated_user = await self.user_repository.update(user_id, user_data)
