@@ -7,11 +7,16 @@ from repositories.user_repository import UserRepository
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
+
 def get_auth_service(session: SessionDep) -> UserService:
     user_repository = UserRepository(session)
     return UserService(user_repository)
 
+
 @router.post("/login")
-async def login(form: OAuth2PasswordRequestForm = Depends(), service: UserService = Depends(get_auth_service)):
+async def login(
+    form: OAuth2PasswordRequestForm = Depends(),
+    service: UserService = Depends(get_auth_service),
+):
     user = await service.auth_user(form.username, form.password)
     return auth_service.create_access_token(str(user.id))

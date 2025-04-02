@@ -15,17 +15,18 @@ conf = ConnectionConfig(
     MAIL_PORT=MAIL_PORT,
     MAIL_SERVER=MAIL_SERVER,
     MAIL_STARTTLS=True,
-    MAIL_SSL_TLS=False
+    MAIL_SSL_TLS=False,
 )
 
+
 async def send_verification_email(email: str, token: str):
-    token = token['access_token']
+    token = token["access_token"]
     verification_url = f"{DOMAIN}/users/verify-email?token={token}"
     message = MessageSchema(
         subject="Verifica tu correo",
         recipients=[email],
         body=f"Confirma tu cuenta haciendo clic en este enlace: {verification_url}",
-        subtype="html"
+        subtype="html",
     )
     fm = FastMail(conf)
     await fm.send_message(message)

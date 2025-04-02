@@ -3,6 +3,7 @@ from typing import Generic, List, Optional, TypeVar
 
 T = TypeVar("T")
 
+
 class IRepository(ABC, Generic[T]):
 
     @abstractmethod

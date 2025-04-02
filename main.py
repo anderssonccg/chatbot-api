@@ -4,16 +4,17 @@ from config.db import init_db
 from routes import auth_route, user_route
 
 
-#@asynccontextmanager
-#async def lifespan(app: FastAPI):
+# @asynccontextmanager
+# async def lifespan(app: FastAPI):
 #    await init_db()
 #    yield
-#lifespan=lifespan
+# lifespan=lifespan
 
 app = FastAPI()
 
 app.include_router(user_route.router)
 app.include_router(auth_route.router)
+
 
 @app.get("/")
 def read_root():
