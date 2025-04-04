@@ -1,8 +1,10 @@
-from typing import Optional
-from sqlmodel import SQLModel, Field
+from typing import TYPE_CHECKING, Optional
+from sqlmodel import Relationship, SQLModel, Field
 from enum import Enum
 from datetime import datetime
 
+if TYPE_CHECKING:
+    from models.resource import Resource
 
 class UserRole(str, Enum):
     ESTUDIANTE = "estudiante"
@@ -29,6 +31,7 @@ class User(UserBase, table=True):
     updated_at: datetime = Field(
         default_factory=datetime.utcnow, sa_column_kwargs={"onupdate": datetime.utcnow}
     )
+    resources: list["Resource"] = Relationship(back_populates="user")
 
 
 class UserRead(UserBase):
