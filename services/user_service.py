@@ -1,7 +1,7 @@
 from typing import List, Optional
 from fastapi import HTTPException, status
 from passlib.context import CryptContext
-from models.user import User, UserCreate, UserRead
+from models.user import User, UserCreate, UserPasswordReset, UserRead
 from repositories.user_repository import UserRepository
 from services import auth_service
 
@@ -77,6 +77,26 @@ class UserService:
                 detail="Su correo ya se ha verificado",
             )
         user.is_verified = True
+        return await self.user_repository.update(user.id, user)
+    
+    async def reset_password(self, token: str, passwords: UserPasswordReset):
+        if passwords.password != passwords.confirm_password:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Las contraseñas no son iguales",
+            )
+        email = auth_service.decode_verification_token(token)
+        if not email:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Token inválido o expirado",
+            )
+        user = await self.user_repository.get_by_email(email)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Usuario inexistente"
+            )
+        user.password = crypt.hash(passwords.confirm_password)
         return await self.user_repository.update(user.id, user)
 
     async def update_user(

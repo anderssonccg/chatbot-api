@@ -13,6 +13,11 @@ def get_user_service(session: SessionDep) -> UserService:
     return UserService(user_repository)
 
 
+def get_auth_service(session: SessionDep) -> UserService:
+    user_repository = UserRepository(session)
+    return UserService(user_repository)
+
+
 async def get_current_user(
     token: str = Depends(oauth2_scheme),
     service: UserService = Depends(get_user_service),

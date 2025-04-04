@@ -38,3 +38,10 @@ class UserRead(UserBase):
     is_verified: bool
     created_at: datetime
     updated_at: datetime
+
+class UserPasswordReset(SQLModel):
+    password: str
+    confirm_password: str
+
+class UserPasswordRequest(SQLModel):
+    email: str

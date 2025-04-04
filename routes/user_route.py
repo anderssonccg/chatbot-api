@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from dependencies import get_current_user, get_user_service
-from models.user import UserCreate, UserRead
+from models.user import UserCreate, UserPasswordRequest, UserPasswordReset, UserRead
 from services import auth_service
 from services.user_service import UserService
-from utils.mail_sender import send_verification_email
+from utils import mail_sender
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -14,7 +14,7 @@ async def create(
 ):
     user = await service.create_user(user_data)
     token = auth_service.create_verification_token(user.email)
-    await send_verification_email(user.email, token)
+    await mail_sender.send_verification_email(user.email, token)
     return user
 
 
@@ -29,3 +29,15 @@ async def get_profile(
     service: UserService = Depends(get_user_service),
 ):
     return await service.get_user_by_id(user.id)
+
+
+@router.post("/reset-password-confirm", response_model=UserRead)
+async def reset_password_confirm(token: str, passwords: UserPasswordReset, service: UserService = Depends(get_user_service)):
+    return await service.reset_password(token, passwords)
+
+
+@router.post("/reset-password")
+async def reset_password(user: UserPasswordRequest):
+    token = auth_service.create_verification_token(user.email)
+    await mail_sender.send_reset_password_email(user.email, token)
+    return {"message": "Revisa tu correo y sigue los pasos para recuperar tu contraseña"}
