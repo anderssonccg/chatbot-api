@@ -43,7 +43,7 @@ class ResourceService:
         return await self.resource_repository.delete(resource.id)
 
     async def update_resource(self, resource_id, resource) -> ResourceRead:
-        resource_update = await self.resource_repository.get(resource_id, resource)
+        resource_update = await self.resource_repository.update(resource_id, resource)
         if not resource_update:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="Recurso inexistente."

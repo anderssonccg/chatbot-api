@@ -1,7 +1,7 @@
 from datetime import datetime
 from enum import Enum
 from typing import Optional
-from sqlmodel import Relationship, SQLModel, Field
+from sqlmodel import Column, ForeignKey, Integer, Relationship, SQLModel, Field
 
 from models.category import Category
 from models.user import User
@@ -34,6 +34,7 @@ class ResourceRead(ResourceBase):
     is_enabled: bool
     category_id: Optional[int]
     user_id: int
+    model_config = {"from_attributes": True}
 
 
 class Resource(ResourceBase, table=True):
@@ -42,7 +43,12 @@ class Resource(ResourceBase, table=True):
     url: str = Field(default=None, unique=True)
     is_enabled: Optional[bool] = Field(default=True)
     created_at: datetime = Field(default_factory=datetime.utcnow)
-    category_id: Optional[int] = Field(default=None, foreign_key="category.id")
+    category_id: Optional[int] = Field(
+        default=None,
+        sa_column=Column(
+            Integer, ForeignKey("category.id", ondelete="SET NULL"), nullable=True
+        ),
+    )
     category: Optional[Category] = Relationship(back_populates="resources")
     user_id: int = Field(default=None, foreign_key="user.id")
     user: User = Relationship(back_populates="resources")

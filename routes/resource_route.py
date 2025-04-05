@@ -55,7 +55,7 @@ async def delete_resource(
     return {"message": "El archivo se ha eliminado correctamente."}
 
 
-@router.patch("/{resource_id}")
+@router.patch("/{resource_id}/set-category")
 async def set_category(
     resource_id: int,
     resource: ResourceUpdate,
@@ -65,4 +65,4 @@ async def set_category(
     return await service.update_resource(resource_id, resource)
 
 
-# PENDIENTE: asignar categoria.
+# Habilitar o deshabilitar

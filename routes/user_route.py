@@ -47,3 +47,11 @@ async def reset_password(user: UserPasswordRequest):
     return {
         "message": "Revisa tu correo y sigue los pasos para recuperar tu contraseña"
     }
+
+
+# arreglar en modelo, agregar la foto
+# update profile
+# update foto (gcs)
+
+# del admin -> habilitar o deshabilitar
+# cambiar rol

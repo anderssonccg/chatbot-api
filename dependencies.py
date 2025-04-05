@@ -2,8 +2,10 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from config.db import SessionDep
 from models.user import UserRead
+from repositories.category_repository import CategoryRepository
 from repositories.resource_repository import ResourceRepository
 from repositories.user_repository import UserRepository
+from services.category_service import CategoryService
 from services.resource_service import ResourceService
 from services.user_service import UserService
 
@@ -23,6 +25,11 @@ def get_auth_service(session: SessionDep) -> UserService:
 def get_resource_service(session: SessionDep) -> ResourceService:
     resource_repository = ResourceRepository(session)
     return ResourceService(resource_repository)
+
+
+def get_category_service(session: SessionDep) -> CategoryService:
+    category_repository = CategoryRepository(session)
+    return CategoryService(category_repository)
 
 
 def check_role(required_role: str):
