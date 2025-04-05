@@ -32,7 +32,11 @@ async def get_profile(
 
 
 @router.post("/reset-password-confirm", response_model=UserRead)
-async def reset_password_confirm(token: str, passwords: UserPasswordReset, service: UserService = Depends(get_user_service)):
+async def reset_password_confirm(
+    token: str,
+    passwords: UserPasswordReset,
+    service: UserService = Depends(get_user_service),
+):
     return await service.reset_password(token, passwords)
 
 
@@ -40,4 +44,6 @@ async def reset_password_confirm(token: str, passwords: UserPasswordReset, servi
 async def reset_password(user: UserPasswordRequest):
     token = auth_service.create_verification_token(user.email)
     await mail_sender.send_reset_password_email(user.email, token)
-    return {"message": "Revisa tu correo y sigue los pasos para recuperar tu contraseña"}
+    return {
+        "message": "Revisa tu correo y sigue los pasos para recuperar tu contraseña"
+    }

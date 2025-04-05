@@ -6,6 +6,7 @@ from datetime import datetime
 if TYPE_CHECKING:
     from models.resource import Resource
 
+
 class UserRole(str, Enum):
     ESTUDIANTE = "estudiante"
     DOCENTE = "docente"
@@ -42,9 +43,11 @@ class UserRead(UserBase):
     created_at: datetime
     updated_at: datetime
 
+
 class UserPasswordReset(SQLModel):
     password: str
     confirm_password: str
+
 
 class UserPasswordRequest(SQLModel):
     email: str

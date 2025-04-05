@@ -4,6 +4,7 @@ from sqlmodel import Relationship, SQLModel, Field
 if TYPE_CHECKING:
     from models.resource import Resource
 
+
 class CategoryBase(SQLModel):
     name: str
     description: str

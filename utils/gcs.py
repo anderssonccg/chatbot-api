@@ -1,5 +1,5 @@
 import os, ast
-from fastapi import UploadFile
+from fastapi import HTTPException, UploadFile
 from google.cloud import storage
 from google.oauth2 import service_account
 
@@ -10,6 +10,7 @@ credentials = service_account.Credentials.from_service_account_info(credentials_
 storage_client = storage.Client(credentials=credentials, project=credentials.project_id)
 
 BUCKET_NAME = os.getenv("BUCKET_NAME")
+
 
 def generate_unique_filename(bucket, filename):
     base_name, ext = os.path.splitext(filename)
@@ -22,6 +23,7 @@ def generate_unique_filename(bucket, filename):
 
     return new_filename
 
+
 def upload_file(file: UploadFile):
     bucket = storage_client.bucket(BUCKET_NAME)
     unique_name = generate_unique_filename(bucket, file.filename)
@@ -29,5 +31,15 @@ def upload_file(file: UploadFile):
     blob.upload_from_file(file.file, content_type=file.content_type)
     return {
         "url": f"https://storage.googleapis.com/{BUCKET_NAME}/{unique_name}",
-        "filename": unique_name
+        "filename": unique_name,
     }
+
+
+def delete_file(filename: str):
+    bucket = storage_client.bucket(BUCKET_NAME)
+    blob = bucket.blob(filename)
+    if blob.exists():
+        blob.delete()
+        return
+    else:
+        raise HTTPException(status_code=404, detail="El archivo no existe.")

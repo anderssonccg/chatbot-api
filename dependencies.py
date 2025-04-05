@@ -19,16 +19,23 @@ def get_auth_service(session: SessionDep) -> UserService:
     user_repository = UserRepository(session)
     return UserService(user_repository)
 
+
 def get_resource_service(session: SessionDep) -> ResourceService:
     resource_repository = ResourceRepository(session)
     return ResourceService(resource_repository)
 
+
 def check_role(required_role: str):
     async def role_checker(user: UserRead = Depends(get_current_user)):
         if user.role != required_role:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="No estas autorizado para realizar esta accion.")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="No estas autorizado para realizar esta accion.",
+            )
         return user
+
     return role_checker
+
 
 async def get_current_user(
     token: str = Depends(oauth2_scheme),

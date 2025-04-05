@@ -20,7 +20,9 @@ class UserService:
     async def get_user_by_id(self, user_id: int) -> Optional[UserRead]:
         user = await self.user_repository.get(user_id)
         if not user:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario inexistente.")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Usuario inexistente."
+            )
         return UserRead.model_validate(user)
 
     async def create_user(self, user_data: UserCreate) -> UserRead:
@@ -80,7 +82,7 @@ class UserService:
             )
         user.is_verified = True
         return await self.user_repository.update(user.id, user)
-    
+
     async def reset_password(self, token: str, passwords: UserPasswordReset):
         if passwords.password != passwords.confirm_password:
             raise HTTPException(

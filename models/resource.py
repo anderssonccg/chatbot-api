@@ -6,9 +6,11 @@ from sqlmodel import Relationship, SQLModel, Field
 from models.category import Category
 from models.user import User
 
+
 class ResourceType(str, Enum):
     DOCUMENTO = "documento"
     RECURSO_RA = "recurso_ra"
+
 
 class ResourceBase(SQLModel):
     description: Optional[str]
@@ -20,12 +22,19 @@ class ResourceCreate(ResourceBase):
     user_id: int
     url: str
 
+
+class ResourceUpdate(SQLModel):
+    category_id: Optional[int]
+
+
 class ResourceRead(ResourceBase):
+    id: int
     name: str
     url: str
     is_enabled: bool
     category_id: Optional[int]
     user_id: int
+
 
 class Resource(ResourceBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
