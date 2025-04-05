@@ -19,7 +19,9 @@ class UserService:
 
     async def get_user_by_id(self, user_id: int) -> Optional[UserRead]:
         user = await self.user_repository.get(user_id)
-        return UserRead.model_validate(user) if user else None
+        if not user:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario inexistente.")
+        return UserRead.model_validate(user)
 
     async def create_user(self, user_data: UserCreate) -> UserRead:
         user = User.model_validate(user_data.model_dump())
