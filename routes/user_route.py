@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from dependencies import get_current_user, get_user_service
 from models.user import UserCreate, UserPasswordRequest, UserPasswordReset, UserRead
 from services import auth_service
@@ -48,7 +48,13 @@ async def reset_password(user: UserPasswordRequest):
         "message": "Revisa tu correo y sigue los pasos para recuperar tu contraseña"
     }
 
-
+@router.patch("/set-photo")
+async def set_photo(
+    user: UserRead = Depends(get_current_user),
+    photo: UploadFile = File(...),
+    service: UserService = Depends(get_user_service)
+):
+    pass
 # arreglar en modelo, agregar la foto
 # update profile
 # update foto (gcs)

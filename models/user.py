@@ -30,6 +30,7 @@ class User(UserBase, table=True):
         default=UserRole.ESTUDIANTE,
         sa_column=Column(PgEnum(UserRole, name="userrole", create_type=False))
     )
+    photo: Optional[str] = Field(default=None)
     is_active: Optional[bool] = Field(default=True)
     is_verified: Optional[bool] = Field(default=False)
     created_at: datetime = Field(default_factory=datetime.utcnow)
@@ -37,3 +38,20 @@ class User(UserBase, table=True):
         default_factory=datetime.utcnow, sa_column_kwargs={"onupdate": datetime.utcnow}
     )
     resources: list["Resource"] = Relationship(back_populates="user")
+
+class UserRead(UserBase):
+    id: int
+    role: str
+    is_active: bool
+    is_verified: bool
+    created_at: datetime
+    updated_at: datetime
+
+
+class UserPasswordReset(SQLModel):
+    password: str
+    confirm_password: str
+
+
+class UserPasswordRequest(SQLModel):
+    email: str
