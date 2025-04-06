@@ -54,10 +54,16 @@ async def set_photo(
     photo: UploadFile = File(...),
     service: UserService = Depends(get_user_service)
 ):
-    pass
-# arreglar en modelo, agregar la foto
+    return await service.set_user_photo(user.id, photo)
+
+@router.patch("/unset-photo")
+async def set_photo(
+    user: UserRead = Depends(get_current_user),
+    service: UserService = Depends(get_user_service)
+):
+    return await service.unset_user_photo(user.id)
+
 # update profile
-# update foto (gcs)
 
 # del admin -> habilitar o deshabilitar
 # cambiar rol

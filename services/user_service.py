@@ -1,9 +1,11 @@
+import os
 from typing import List, Optional
-from fastapi import HTTPException, status
+from fastapi import HTTPException, UploadFile, status
 from passlib.context import CryptContext
 from models.user import User, UserCreate, UserPasswordReset, UserRead
 from repositories.user_repository import UserRepository
 from services import auth_service
+from utils import gcs
 
 crypt = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -120,6 +122,36 @@ class UserService:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail="El email ya se encuenta en uso",
+            )
+        
+    async def set_user_photo(self, user_id: int, photo: UploadFile) -> UserRead:
+        user = await self.user_repository.get(user_id)
+        self.validate_photo_extension(photo.filename)
+        self.delete_photo(user.photo)
+        photo_url = gcs.upload_file(photo)["url"]
+        user.photo = photo_url
+        user_updated = await self.user_repository.update(user.id, user)
+        return UserRead.model_validate(user_updated)
+
+    async def unset_user_photo(self, user_id: int) -> UserRead:
+        user = await self.user_repository.get(user_id)
+        self.delete_photo(user.photo)
+        user.photo = None
+        user_updated = await self.user_repository.update(user.id, user)
+        return UserRead.model_validate(user_updated)
+    
+    def delete_photo(self, photo_url: str):
+        if photo_url:
+            last_photo = photo_url.split("/")[-1]
+            gcs.delete_file(last_photo)
+
+    def validate_photo_extension(self, filename: str):
+        ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png"}
+        ext = os.path.splitext(filename)[1].lower().replace(".", "")
+        if ext not in ALLOWED_EXTENSIONS:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Formato de imagen no permitido. Solo se aceptan: {', '.join(ALLOWED_EXTENSIONS)}"
             )
 
     async def delete_user(self, user_id: int) -> bool:
