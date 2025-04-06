@@ -2,7 +2,7 @@ import os
 from typing import List, Optional
 from fastapi import HTTPException, UploadFile, status
 from passlib.context import CryptContext
-from models.user import User, UserCreate, UserPasswordReset, UserRead
+from models.user import User, UserCreate, UserPasswordReset, UserRead, UserUpdate
 from repositories.user_repository import UserRepository
 from services import auth_service
 from utils import gcs
@@ -106,10 +106,10 @@ class UserService:
         return await self.user_repository.update(user.id, user)
 
     async def update_user(
-        self, user_id: int, user_data: UserCreate
+        self, user_id: int, user_data: UserUpdate
     ) -> Optional[UserRead]:
         updated_user = await self.user_repository.update(user_id, user_data)
-        return UserRead.model_validate(updated_user) if updated_user else None
+        return UserRead.model_validate(updated_user)
 
     async def validate_email(self, email: str):
         if not email.endswith(f"@ufps.edu.co"):

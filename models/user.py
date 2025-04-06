@@ -48,6 +48,9 @@ class UserRead(UserBase):
     created_at: datetime
     updated_at: datetime
 
+class UserUpdate(SQLModel):
+    fullname: str
+
 
 class UserPasswordReset(SQLModel):
     password: str

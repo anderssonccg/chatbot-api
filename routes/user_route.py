@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from dependencies import get_current_user, get_user_service
-from models.user import UserCreate, UserPasswordRequest, UserPasswordReset, UserRead
+from models.user import UserCreate, UserPasswordRequest, UserPasswordReset, UserRead, UserUpdate
 from services import auth_service
 from services.user_service import UserService
 from utils import mail_sender
@@ -48,7 +48,7 @@ async def reset_password(user: UserPasswordRequest):
         "message": "Revisa tu correo y sigue los pasos para recuperar tu contraseña"
     }
 
-@router.patch("/set-photo")
+@router.patch("/set-photo", response_model=UserRead)
 async def set_photo(
     user: UserRead = Depends(get_current_user),
     photo: UploadFile = File(...),
@@ -56,14 +56,20 @@ async def set_photo(
 ):
     return await service.set_user_photo(user.id, photo)
 
-@router.patch("/unset-photo")
+@router.patch("/unset-photo", response_model=UserRead)
 async def set_photo(
     user: UserRead = Depends(get_current_user),
     service: UserService = Depends(get_user_service)
 ):
     return await service.unset_user_photo(user.id)
 
-# update profile
+@router.put("/update-profile", response_model=UserRead)
+async def update_profile(
+    user_data: UserUpdate,
+    user: UserRead = Depends(get_current_user),
+    service: UserService = Depends(get_user_service)
+):
+    return await service.update_user(user.id, user_data)
 
 # del admin -> habilitar o deshabilitar
 # cambiar rol
