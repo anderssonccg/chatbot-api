@@ -42,11 +42,6 @@ class UserService:
                 detail="Credenciales incorrectas",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-        if not user.is_verified:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Debes verificar tu correo para poder iniciar sesion",
-            )
         return UserRead.model_validate(user)
 
     async def get_current_user(self, token: str):
@@ -59,6 +54,15 @@ class UserService:
         if user is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="Usuario inexistente."
+            )
+        if not user.is_verified:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Debes verificar tu correo para acceder completamente.",
+            )
+        if not user.is_active:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="El usuario se encuentra inactivo. Contacte con el administrador"
             )
         return UserRead.model_validate(user)
 
@@ -106,8 +110,8 @@ class UserService:
         return await self.user_repository.update(user.id, user)
 
     async def update_user(
-        self, user_id: int, user_data: UserUpdate
-    ) -> Optional[UserRead]:
+        self, user_id: int, user_data
+        ) -> Optional[UserRead]:
         updated_user = await self.user_repository.update(user_id, user_data)
         return UserRead.model_validate(updated_user)
 

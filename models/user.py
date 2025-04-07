@@ -51,11 +51,15 @@ class UserRead(UserBase):
 class UserUpdate(SQLModel):
     fullname: str
 
+class UserUpdateRole(SQLModel):
+    role: UserRole
+
+class UserUpdateStatus(SQLModel):
+    is_active: bool
 
 class UserPasswordReset(SQLModel):
     password: str
     confirm_password: str
-
 
 class UserPasswordRequest(SQLModel):
     email: str
