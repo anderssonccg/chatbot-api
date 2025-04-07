@@ -27,6 +27,9 @@ class ResourceUpdate(SQLModel):
     category_id: Optional[int]
 
 
+class ResourceUpdateStatus(SQLModel):
+    is_enabled: bool
+
 class ResourceRead(ResourceBase):
     id: int
     name: str
