@@ -1,6 +1,7 @@
 from .user import *
 from .category import *
 from .resource import *
+from .faq import *
 
 from sqlmodel import SQLModel
 

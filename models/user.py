@@ -6,6 +6,7 @@ from sqlalchemy import Column, Enum as PgEnum
 
 if TYPE_CHECKING:
     from models.resource import Resource
+    from models.faq import FAQ
 
 
 class UserRole(str, Enum):
@@ -38,6 +39,7 @@ class User(UserBase, table=True):
         default_factory=datetime.utcnow, sa_column_kwargs={"onupdate": datetime.utcnow}
     )
     resources: list["Resource"] = Relationship(back_populates="user")
+    faqs: list["FAQ"] = Relationship(back_populates="user")
 
 class UserRead(UserBase):
     id: int
