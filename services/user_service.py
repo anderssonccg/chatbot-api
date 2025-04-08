@@ -112,6 +112,9 @@ class UserService:
     async def update_user(
         self, user_id: int, user_data
         ) -> Optional[UserRead]:
+        user = await self.user_repository.get(user_id)
+        if not user:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario inexsistente.")
         updated_user = await self.user_repository.update(user_id, user_data)
         return UserRead.model_validate(updated_user)
 
