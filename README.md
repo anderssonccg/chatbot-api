@@ -5,8 +5,9 @@
 - FastAPI [Documentacion](https://fastapi.tiangolo.com/)
 - SQLModel: ORM para base de datos. [Documentacion](https://sqlmodel.tiangolo.com/)
 - PostgreSQL: Base de datos
-- JWT: Autenticacion
+- JWT y Oauth2: Autenticacion de usuarios
 - Google Cloud Storage: Almacenamiento de archivos
+- Alembic: Migraciones de la base de datos
 
 ## Comenzar
 1. Clonar el repositorio
