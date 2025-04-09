@@ -3,9 +3,11 @@ from fastapi.security import OAuth2PasswordBearer
 from config.db import SessionDep
 from models.user import UserRead
 from repositories.category_repository import CategoryRepository
+from repositories.faq_repository import FAQRepository
 from repositories.resource_repository import ResourceRepository
 from repositories.user_repository import UserRepository
 from services.category_service import CategoryService
+from services.faq_service import FAQService
 from services.resource_service import ResourceService
 from services.user_service import UserService
 
@@ -13,11 +15,6 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 
 def get_user_service(session: SessionDep) -> UserService:
-    user_repository = UserRepository(session)
-    return UserService(user_repository)
-
-
-def get_auth_service(session: SessionDep) -> UserService:
     user_repository = UserRepository(session)
     return UserService(user_repository)
 
@@ -30,6 +27,11 @@ def get_resource_service(session: SessionDep) -> ResourceService:
 def get_category_service(session: SessionDep) -> CategoryService:
     category_repository = CategoryRepository(session)
     return CategoryService(category_repository)
+
+
+def get_faq_service(session: SessionDep) -> FAQService:
+    faq_repository = FAQRepository(session)
+    return FAQService(faq_repository)
 
 
 def check_role(required_role: str):

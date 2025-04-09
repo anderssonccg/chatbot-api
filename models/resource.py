@@ -30,6 +30,7 @@ class ResourceUpdate(SQLModel):
 class ResourceUpdateStatus(SQLModel):
     is_enabled: bool
 
+
 class ResourceRead(ResourceBase):
     id: int
     name: str

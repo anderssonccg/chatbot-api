@@ -1,7 +1,12 @@
 from typing import List
 from fastapi import APIRouter, Depends
 from dependencies import check_role, get_category_service
-from models.category import CategoryCreate, CategoryRead, CategoryReadWithResources, CategoryUpdate
+from models.category import (
+    CategoryCreate,
+    CategoryRead,
+    CategoryReadWithResources,
+    CategoryUpdate,
+)
 from models.user import UserRead
 from services.category_service import CategoryService
 
@@ -58,6 +63,6 @@ async def update_category(
     category_id: int,
     category_data: CategoryUpdate,
     user: UserRead = Depends(check_role("admin")),
-    service: CategoryService = Depends(get_category_service)
+    service: CategoryService = Depends(get_category_service),
 ):
     return await service.update_category(category_id, category_data)

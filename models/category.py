@@ -17,9 +17,11 @@ class CategoryCreate(CategoryBase):
 class CategoryRead(CategoryBase):
     id: int
 
+
 class CategoryUpdate(SQLModel):
     name: Optional[str] = None
     description: Optional[str] = None
+
 
 class CategoryReadWithResources(CategoryRead):
     resources: list["ResourceRead"] = []

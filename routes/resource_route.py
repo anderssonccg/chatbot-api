@@ -1,7 +1,12 @@
 from typing import List
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 from dependencies import check_role, get_resource_service
-from models.resource import ResourceRead, ResourceType, ResourceUpdate, ResourceUpdateStatus
+from models.resource import (
+    ResourceRead,
+    ResourceType,
+    ResourceUpdate,
+    ResourceUpdateStatus,
+)
 from models.user import UserRead
 from services.resource_service import ResourceService
 
@@ -64,11 +69,12 @@ async def set_category(
 ):
     return await service.update_resource(resource_id, resource)
 
+
 @router.patch("/{resource_id}/set-status")
 async def set_status(
     resource_id: int,
     resource: ResourceUpdateStatus,
     user: UserRead = Depends(check_role("admin")),
-    service: ResourceService = Depends(get_resource_service)
+    service: ResourceService = Depends(get_resource_service),
 ):
     return await service.update_resource(resource_id, resource)

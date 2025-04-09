@@ -1,6 +1,14 @@
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from dependencies import check_role, get_current_user, get_user_service
-from models.user import UserCreate, UserPasswordRequest, UserPasswordReset, UserRead, UserUpdate, UserUpdateRole, UserUpdateStatus
+from models.user import (
+    UserCreate,
+    UserPasswordRequest,
+    UserPasswordReset,
+    UserRead,
+    UserUpdate,
+    UserUpdateRole,
+    UserUpdateStatus,
+)
 from services import auth_service
 from services.user_service import UserService
 from utils import mail_sender
@@ -48,26 +56,29 @@ async def reset_password(user: UserPasswordRequest):
         "message": "Revisa tu correo y sigue los pasos para recuperar tu contraseña"
     }
 
+
 @router.patch("/set-photo", response_model=UserRead)
 async def set_photo(
     user: UserRead = Depends(get_current_user),
     photo: UploadFile = File(...),
-    service: UserService = Depends(get_user_service)
+    service: UserService = Depends(get_user_service),
 ):
     return await service.set_user_photo(user.id, photo)
+
 
 @router.patch("/unset-photo", response_model=UserRead)
 async def set_photo(
     user: UserRead = Depends(get_current_user),
-    service: UserService = Depends(get_user_service)
+    service: UserService = Depends(get_user_service),
 ):
     return await service.unset_user_photo(user.id)
+
 
 @router.put("/update-profile", response_model=UserRead)
 async def update_profile(
     user_data: UserUpdate,
     user: UserRead = Depends(get_current_user),
-    service: UserService = Depends(get_user_service)
+    service: UserService = Depends(get_user_service),
 ):
     return await service.update_user(user.id, user_data)
 
@@ -77,7 +88,7 @@ async def set_role(
     user_id: int,
     user_data: UserUpdateStatus,
     user: UserRead = Depends(check_role("admin")),
-    service: UserService = Depends(get_user_service)
+    service: UserService = Depends(get_user_service),
 ):
     return await service.update_user(user_id, user_data)
 
@@ -87,6 +98,6 @@ async def set_role(
     user_id: int,
     user_data: UserUpdateRole,
     user: UserRead = Depends(check_role("admin")),
-    service: UserService = Depends(get_user_service)
+    service: UserService = Depends(get_user_service),
 ):
     return await service.update_user(user_id, user_data)

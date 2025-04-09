@@ -29,7 +29,7 @@ class User(UserBase, table=True):
     password: str
     role: Optional[UserRole] = Field(
         default=UserRole.ESTUDIANTE,
-        sa_column=Column(PgEnum(UserRole, name="userrole", create_type=False))
+        sa_column=Column(PgEnum(UserRole, name="userrole", create_type=False)),
     )
     photo: Optional[str] = Field(default=None)
     is_active: Optional[bool] = Field(default=True)
@@ -41,6 +41,7 @@ class User(UserBase, table=True):
     resources: list["Resource"] = Relationship(back_populates="user")
     faqs: list["FAQ"] = Relationship(back_populates="user")
 
+
 class UserRead(UserBase):
     id: int
     role: str
@@ -50,18 +51,23 @@ class UserRead(UserBase):
     created_at: datetime
     updated_at: datetime
 
+
 class UserUpdate(SQLModel):
     fullname: str
+
 
 class UserUpdateRole(SQLModel):
     role: UserRole
 
+
 class UserUpdateStatus(SQLModel):
     is_active: bool
+
 
 class UserPasswordReset(SQLModel):
     password: str
     confirm_password: str
+
 
 class UserPasswordRequest(SQLModel):
     email: str

@@ -62,7 +62,8 @@ class UserService:
             )
         if not user.is_active:
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED, detail="El usuario se encuentra inactivo. Contacte con el administrador"
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="El usuario se encuentra inactivo. Contacte con el administrador",
             )
         return UserRead.model_validate(user)
 
@@ -109,12 +110,12 @@ class UserService:
         user.password = crypt.hash(passwords.confirm_password)
         return await self.user_repository.update(user.id, user)
 
-    async def update_user(
-        self, user_id: int, user_data
-        ) -> Optional[UserRead]:
+    async def update_user(self, user_id: int, user_data) -> Optional[UserRead]:
         user = await self.user_repository.get(user_id)
         if not user:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario inexsistente.")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Usuario inexsistente."
+            )
         updated_user = await self.user_repository.update(user_id, user_data)
         return UserRead.model_validate(updated_user)
 
@@ -130,7 +131,7 @@ class UserService:
                 status_code=status.HTTP_409_CONFLICT,
                 detail="El email ya se encuenta en uso",
             )
-        
+
     async def set_user_photo(self, user_id: int, photo: UploadFile) -> UserRead:
         user = await self.user_repository.get(user_id)
         self.validate_photo_extension(photo.filename)
@@ -146,7 +147,7 @@ class UserService:
         user.photo = None
         user_updated = await self.user_repository.update(user.id, user)
         return UserRead.model_validate(user_updated)
-    
+
     def delete_photo(self, photo_url: str):
         if photo_url:
             last_photo = photo_url.split("/")[-1]
@@ -158,7 +159,7 @@ class UserService:
         if ext not in ALLOWED_EXTENSIONS:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Formato de imagen no permitido. Solo se aceptan: {', '.join(ALLOWED_EXTENSIONS)}"
+                detail=f"Formato de imagen no permitido. Solo se aceptan: {', '.join(ALLOWED_EXTENSIONS)}",
             )
 
     async def delete_user(self, user_id: int) -> bool:

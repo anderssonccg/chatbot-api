@@ -45,13 +45,17 @@ class CategoryService:
         await self.validate_name(category_data.name)
         category = Category.model_validate(category_data)
         return await self.category_repository.create(category)
-    
-    async def update_category(self, category_id: int, category_data: CategoryUpdate) -> CategoryRead:
+
+    async def update_category(
+        self, category_id: int, category_data: CategoryUpdate
+    ) -> CategoryRead:
         category = await self.category_repository.get(category_id)
         if category_data.name and category_data.name != category.name:
             await self.validate_name(category_data.name)
         if not category:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Categoria inexistente.")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Categoria inexistente."
+            )
         category_data = category_data.dict(exclude_unset=True)
         return await self.category_repository.update(category_id, category_data)
 
