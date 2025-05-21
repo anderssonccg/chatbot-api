@@ -47,7 +47,7 @@ platformdirs==4.3.7
 priority==2.0.0
 proto-plus==1.26.1
 protobuf==6.30.2
-psycopg2==2.9.10
+psycopg2-binary==2.9.10
 pyasn1==0.6.1
 pyasn1_modules==0.4.2
 pycparser==2.22
