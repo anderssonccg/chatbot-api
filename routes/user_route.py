@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from dependencies import check_role, get_current_user, get_user_service
 from models.user import (
@@ -29,6 +30,14 @@ async def create(
 @router.get("/verify-email", response_model=UserRead)
 async def verify_email(token: str, service: UserService = Depends(get_user_service)):
     return await service.verify_email(token)
+
+
+@router.get("/", response_model=List[UserRead])
+async def get_all_users(
+    user: UserRead = Depends(check_role("admin")),
+    service: UserService = Depends(get_user_service),
+):
+    return await service.get_all_users()
 
 
 @router.get("/profile", response_model=UserRead)
