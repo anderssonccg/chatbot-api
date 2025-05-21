@@ -24,6 +24,11 @@ class UserCreate(UserBase):
     password: str
 
 
+class UserCreateByAdmin(UserBase):
+    password: str
+    role: UserRole
+
+
 class User(UserBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     password: str

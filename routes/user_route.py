@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from dependencies import check_role, get_current_user, get_user_service
 from models.user import (
     UserCreate,
+    UserCreateByAdmin,
     UserPasswordRequest,
     UserPasswordReset,
     UserRead,
@@ -25,6 +26,18 @@ async def create(
     token = auth_service.create_verification_token(user.email)
     await mail_sender.send_verification_email(user.email, token)
     return user
+
+
+@router.post("/create", response_model=UserRead)
+async def create_by_admin(
+    user_data: UserCreateByAdmin,
+    user: UserRead = Depends(check_role("admin")),
+    service: UserService = Depends(get_user_service),
+):
+    user_created = await service.create_user(user_data)
+    token = auth_service.create_verification_token(user_created.email)
+    await mail_sender.send_verification_email(user_created.email, token)
+    return user_created
 
 
 @router.get("/verify-email", response_model=UserRead)
