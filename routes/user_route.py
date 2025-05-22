@@ -123,3 +123,12 @@ async def set_role(
     service: UserService = Depends(get_user_service),
 ):
     return await service.update_user(user_id, user_data)
+
+
+@router.delete("/{user_id}/delete")
+async def delete_user(
+    user_id: int,
+    user: UserRead = Depends(check_role("admin")),
+    service: UserService = Depends(get_user_service)
+):
+    return await service.delete_user(user_id)
