@@ -29,6 +29,7 @@ class UserService:
 
     async def create_user(self, user_data: UserCreate) -> UserRead:
         user = User.model_validate(user_data.model_dump())
+        user.email = user.email.lower()
         await self.validate_email(user.email)
         user.password = crypt.hash(user.password)
         created_user = await self.user_repository.create(user)
