@@ -1,7 +1,6 @@
 from typing import List
 from fastapi import APIRouter, Depends
-
-from dependencies import check_role, get_faq_service
+from dependencies import check_role, get_current_user, get_faq_service
 from models.faq import FAQCreate, FAQCreateRequest, FAQRead, FAQUpdate
 from models.user import UserRead
 from services.faq_service import FAQService
@@ -12,7 +11,7 @@ router = APIRouter(prefix="/faqs", tags=["FAQs"])
 
 @router.get("/", response_model=List[FAQRead])
 async def get_all_faqs(
-    user: UserRead = Depends(check_role("admin")),
+    user: UserRead = Depends(get_current_user),
     service: FAQService = Depends(get_faq_service),
 ):
     return await service.get_all_faqs()
@@ -21,7 +20,7 @@ async def get_all_faqs(
 @router.get("/{faq_id}", response_model=FAQRead)
 async def get_faq(
     faq_id: int,
-    user: UserRead = Depends(check_role("admin")),
+    user: UserRead = Depends(get_current_user),
     service: FAQService = Depends(get_faq_service),
 ):
     return await service.get_by_id(faq_id)
