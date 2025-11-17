@@ -2,6 +2,10 @@ import os
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 from jinja2 import Environment, FileSystemLoader
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 MAIL_USERNAME = os.getenv("MAIL_USERNAME")
 MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
 MAIL_FROM = os.getenv("MAIL_FROM")
