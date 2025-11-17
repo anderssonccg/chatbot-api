@@ -1,3 +1,4 @@
+import os
 from typing import Optional
 
 from fastapi import HTTPException, UploadFile, status
@@ -26,6 +27,14 @@ class ResourceService:
     async def create_resource(
         self, file: UploadFile, resource_dict: dict
     ) -> ResourceRead:
+        
+        if file.content_type != "application/pdf":
+            raise HTTPException(status_code=400, detail="Solo se permiten PDF.")
+
+        ext = os.path.splitext(file.filename)[1].lower()
+        if ext != ".pdf":
+            raise HTTPException(status_code=400, detail="El archivo debe ser .pdf.")
+
         file_dict = gcs.upload_file(file)
         resource_dict["url"] = file_dict["url"]
         resource_dict["name"] = file_dict["filename"]
