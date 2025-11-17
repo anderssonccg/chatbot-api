@@ -11,7 +11,7 @@ from models.user import (
     UserUpdateRole,
     UserUpdateStatus,
 )
-from services import auth_service
+from utils import auth
 from services.user_service import UserService
 from utils import mail_sender
 
@@ -23,7 +23,7 @@ async def create(
     user_data: UserCreate, service: UserService = Depends(get_user_service)
 ):
     user = await service.create_user(user_data)
-    token = auth_service.create_verification_token(user.email)
+    token = auth.create_verification_token(user.email)
     await mail_sender.send_verification_email(user.email, token)
     return user
 
@@ -35,7 +35,7 @@ async def create_by_admin(
     service: UserService = Depends(get_user_service),
 ):
     user_created = await service.create_user(user_data)
-    token = auth_service.create_verification_token(user_created.email)
+    token = auth.create_verification_token(user_created.email)
     await mail_sender.send_verification_email(user_created.email, token)
     return user_created
 
@@ -72,7 +72,7 @@ async def reset_password_confirm(
 
 @router.post("/reset-password")
 async def reset_password(user: UserPasswordRequest):
-    token = auth_service.create_verification_token(user.email)
+    token = auth.create_verification_token(user.email)
     await mail_sender.send_reset_password_email(user.email, token)
     return {
         "message": "Revisa tu correo y sigue los pasos para recuperar tu contraseña"

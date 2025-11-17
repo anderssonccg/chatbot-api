@@ -4,7 +4,7 @@ from fastapi import HTTPException, UploadFile, status
 from passlib.context import CryptContext
 from models.user import User, UserCreate, UserPasswordReset, UserRead, UserUpdate
 from repositories.user_repository import UserRepository
-from services import auth_service
+from utils import auth
 from utils import gcs
 
 crypt = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -46,7 +46,7 @@ class UserService:
         return UserRead.model_validate(user)
 
     async def get_current_user(self, token: str):
-        id = auth_service.decode_token(token)
+        id = auth.decode_token(token)
         if id is None:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED, detail="Token invalido."
@@ -72,7 +72,7 @@ class UserService:
         return await self.user_repository.get_by_email(email)
 
     async def verify_email(self, token: str) -> Optional[UserRead]:
-        email = auth_service.decode_verification_token(token)
+        email = auth.decode_verification_token(token)
         if not email:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -97,7 +97,7 @@ class UserService:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Las contraseñas no son iguales",
             )
-        email = auth_service.decode_verification_token(token)
+        email = auth.decode_verification_token(token)
         if not email:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,

@@ -46,7 +46,7 @@ def decode_verification_token(token: str):
     try:
         email = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM]).get(
             "sub"
-        )  # Retorna el email si es válido
+        )
     except jwt.ExpiredSignatureError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="El token ha expirado"
