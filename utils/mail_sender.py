@@ -8,7 +8,6 @@ load_dotenv()
 
 MAIL_USERNAME = os.getenv("MAIL_USERNAME")
 MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
-MAIL_FROM = os.getenv("MAIL_FROM")
 MAIL_PORT = os.getenv("MAIL_PORT")
 MAIL_SERVER = os.getenv("MAIL_SERVER")
 DOMAIN = os.getenv("DOMAIN")
@@ -16,7 +15,7 @@ DOMAIN = os.getenv("DOMAIN")
 conf = ConnectionConfig(
     MAIL_USERNAME=MAIL_USERNAME,
     MAIL_PASSWORD=MAIL_PASSWORD,
-    MAIL_FROM=MAIL_FROM,
+    MAIL_FROM=MAIL_USERNAME,
     MAIL_PORT=MAIL_PORT,
     MAIL_SERVER=MAIL_SERVER,
     MAIL_STARTTLS=True,
