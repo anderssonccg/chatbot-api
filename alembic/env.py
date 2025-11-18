@@ -5,7 +5,7 @@ from sqlalchemy import engine_from_config, pool
 from alembic import context
 from sqlmodel import SQLModel
 from dotenv import load_dotenv
-\
+
 load_dotenv()
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))

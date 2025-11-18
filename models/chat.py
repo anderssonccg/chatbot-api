@@ -31,5 +31,7 @@ class Chat(ChatBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     titulo: str = Field(default=None)
     fecha: datetime = Field(default_factory=datetime.utcnow)
+    satisfaction_level: Optional[int] = Field(default=None, ge=1, le=5)
     user_id: int = Field(default=None, foreign_key="user.id")
     user: User = Relationship(back_populates="chats")
+    messages: list["Message"] = Relationship(back_populates="chat")
