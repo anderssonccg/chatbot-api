@@ -45,6 +45,7 @@ class User(UserBase, table=True):
     )
     resources: list["Resource"] = Relationship(back_populates="user")
     faqs: list["FAQ"] = Relationship(back_populates="user")
+    chats: list["Chat"] = Relationship(back_populates="user")
 
 
 class UserRead(UserBase):

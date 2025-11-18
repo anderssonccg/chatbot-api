@@ -1,0 +1,35 @@
+from typing import Optional
+from datetime import datetime
+from sqlmodel import Relationship, SQLModel, Field
+from models.user import User
+
+class ChatBase(SQLModel):
+    titulo: str
+    fecha: datetime
+
+
+class ChatCreateRequest(ChatBase):
+    pass
+
+
+class ChatCreate(ChatBase):
+    user_id: int
+
+
+class ChatUpdate(SQLModel):
+    titulo: Optional[str] = None
+
+
+class ChatRead(ChatBase):
+    id: int
+    titulo: str
+    fecha: datetime
+    user_id: int
+
+
+class Chat(ChatBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    titulo: str = Field(default=None)
+    fecha: datetime = Field(default_factory=datetime.utcnow)
+    user_id: int = Field(default=None, foreign_key="user.id")
+    user: User = Relationship(back_populates="chats")
