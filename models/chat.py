@@ -5,7 +5,6 @@ from models.user import User
 
 class ChatBase(SQLModel):
     titulo: str
-    fecha: datetime
 
 
 class ChatCreateRequest(ChatBase):

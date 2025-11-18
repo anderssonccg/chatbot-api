@@ -10,6 +10,10 @@ from services.category_service import CategoryService
 from services.faq_service import FAQService
 from services.resource_service import ResourceService
 from services.user_service import UserService
+from repositories.chat_repository import ChatRepository
+from services.chat_service import ChatService
+from services.message_service import MessageService
+from repositories.message_repository import MessageRepository
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
@@ -32,6 +36,14 @@ def get_category_service(session: SessionDep) -> CategoryService:
 def get_faq_service(session: SessionDep) -> FAQService:
     faq_repository = FAQRepository(session)
     return FAQService(faq_repository)
+
+def get_chat_service(session: SessionDep) -> ChatService:
+    chat_repository = ChatRepository(session)
+    return ChatService(chat_repository)
+
+def get_message_service(session: SessionDep) -> MessageService:
+    message_repository = MessageRepository(session)
+    return MessageService(message_repository)
 
 
 def check_role(required_role: str):

@@ -3,10 +3,13 @@ import httpx
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from google import genai
 from config.db import AsyncSessionLocal
-from dependencies import get_resource_service
+from dependencies import get_chat_service, get_message_service, get_resource_service
+from models.message import MessageCreate
 from models.user import User
 from sqlmodel import select
 from utils import auth
+from models.chat import ChatCreate
+from datetime import datetime
 
 router = APIRouter()
 client = genai.Client()
@@ -46,7 +49,11 @@ async def websocket_chat_endpoint(websocket: WebSocket):
             except Exception as e:
                 print("Error cargando documentos al chat:", e)
 
-        await websocket.send_json({"status": "ready"})
+        chat_id = await create_chat_in_db(user.id)
+        await websocket.send_json({
+            "chat_id": chat_id,
+            "status": "ready"
+        })
 
     except Exception as e:
         print("Error preparando el chat:", e)
@@ -57,9 +64,10 @@ async def websocket_chat_endpoint(websocket: WebSocket):
     try:
         while True:
             user_message = await websocket.receive_text()
-
+            await save_message_in_db(chat_id, user_message, role="user")
             try:
                 response = chat.send_message(user_message)
+                await save_message_in_db(chat_id, response.text, role="chatbot")
                 await websocket.send_text(response.text)
 
             except Exception as e:
@@ -114,3 +122,35 @@ async def get_current_user_ws(token: str):
             raise Exception("Usuario no encontrado")
 
         return user
+
+
+async def create_chat_in_db(user_id: int):
+    async with AsyncSessionLocal() as session:
+        try:
+            chat_service = get_chat_service(session)
+            chat_created = await chat_service.create(
+                ChatCreate(
+                    user_id=user_id,
+                    titulo="Chat iniciado el " + datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                )
+            )
+            return chat_created.id
+        except Exception as e:
+            print(f"Error creando chat en BD: {e}")
+            await session.rollback()
+            raise
+
+async def save_message_in_db(chat_id: int, texto: str, role: str):
+    async with AsyncSessionLocal() as session:
+        try:
+            message = MessageCreate(
+                chat_id=chat_id,
+                texto=texto,
+                role=role
+            )
+            message_service = get_message_service(session)
+            await message_service.create(message)
+        except Exception as e:
+            print(f"Error guardando mensaje en BD: {e}")
+            await session.rollback()
+            raise
