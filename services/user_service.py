@@ -15,6 +15,9 @@ class UserService:
     def __init__(self, user_repository: UserRepository):
         self.user_repository = user_repository
 
+    async def count_users(self) -> int:
+        return await self.user_repository.count()
+
     async def get_all_users(self) -> List[UserRead]:
         users = await self.user_repository.get_all()
         return [UserRead.model_validate(user) for user in users]

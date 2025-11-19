@@ -12,6 +12,7 @@ from services.chat_service import ChatService
 from utils import auth
 from models.chat import ChatCreate, ChatRead, ChatUpdate
 from datetime import datetime
+import time
 
 router = APIRouter()
 client = genai.Client()
@@ -93,8 +94,11 @@ async def websocket_chat_endpoint(websocket: WebSocket):
             user_message = await websocket.receive_text()
             await save_message_in_db(chat_id, user_message, role="user")
             try:
+                start_time = time.perf_counter()
                 response = chat.send_message(user_message)
-                await save_message_in_db(chat_id, response.text, role="chatbot")
+                end_time = time.perf_counter()
+                response_time = end_time - start_time
+                await save_message_in_db(chat_id, response.text, role="chatbot", response_time=response_time)
                 await websocket.send_text(response.text)
 
             except Exception as e:
@@ -167,13 +171,14 @@ async def create_chat_in_db(user_id: int):
             await session.rollback()
             raise
 
-async def save_message_in_db(chat_id: int, texto: str, role: str):
+async def save_message_in_db(chat_id: int, texto: str, role: str, response_time: float = None):
     async with AsyncSessionLocal() as session:
         try:
             message = MessageCreate(
                 chat_id=chat_id,
                 texto=texto,
-                role=role
+                role=role,
+                response_time=response_time
             )
             message_service = get_message_service(session)
             await message_service.create(message)

@@ -1,5 +1,5 @@
 from typing import List, Optional
-from sqlmodel import select
+from sqlmodel import func, select
 from config.db import SessionDep
 from models.user import User
 from repositories.repository_interface import IRepository
@@ -9,6 +9,11 @@ class UserRepository(IRepository[User]):
 
     def __init__(self, session: SessionDep):
         self.session = session
+
+    async def count(self) -> int:
+        query = select(func.count()).select_from(User)
+        result = await self.session.execute(query)
+        return result.scalar_one()
 
     async def get_all(self) -> List[User]:
         result = await self.session.execute(select(User))

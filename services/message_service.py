@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List, Optional
 from fastapi import HTTPException, status
 from models.message import Message, MessageCreate, MessageRead, MessageUpdate
@@ -7,6 +8,17 @@ class MessageService:
 
     def __init__(self, message_repository: MessageRepository):
         self.message_repository = message_repository
+
+    async def count_user_messages(self) -> int:
+        return await self.message_repository.count_user_messages()
+    
+    async def count_daily_user_messages(self) -> int:
+        date = datetime.utcnow()
+        start_of_day = date.replace(hour=0, minute=0, second=0, microsecond=0)
+        return await self.message_repository.count_daily_user_messages(date=start_of_day)
+    
+    async def get_average_response_time(self) -> float:
+        return await self.message_repository.get_average_response_time()
 
     async def get_all_messages_by_chat(self, chat_id: int) -> List[MessageRead]:
         messages = await self.message_repository.get_by_chat(chat_id)

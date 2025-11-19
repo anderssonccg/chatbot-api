@@ -17,6 +17,7 @@ class MessageCreateRequest(MessageBase):
 
 class MessageCreate(MessageBase):
     chat_id: int
+    response_time: Optional[float] = None
 
 class MessageUpdate(SQLModel):
     role: Optional[MessageRole] = None
@@ -33,4 +34,5 @@ class Message(MessageBase, table=True):
     role: MessageRole
     texto: str = Field(default=None)
     fecha: datetime = Field(default_factory=datetime.utcnow)
+    response_time: Optional[float] = Field(default=None)
     chat: Chat = Relationship(back_populates="messages")

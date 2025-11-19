@@ -15,6 +15,9 @@ class ChatService:
     async def get_all_chats(self) -> List[ChatRead]:
         chats = await self.chat_repository.get_all()
         return [ChatRead.model_validate(chat) for chat in chats]
+    
+    async def get_average_satisfaction_level(self) -> float:
+        return await self.chat_repository.get_average_satisfaction_level()
 
     async def get_by_id(self, id: int) -> Optional[ChatRead]:
         chat = await self.chat_repository.get(id)

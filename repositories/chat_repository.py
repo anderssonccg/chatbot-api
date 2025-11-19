@@ -1,5 +1,5 @@
 from typing import List, Optional
-from sqlmodel import select
+from sqlmodel import func, select
 from sqlalchemy.orm import selectinload
 from config.db import SessionDep
 from models.chat import Chat
@@ -29,6 +29,12 @@ class ChatRepository(IRepository[Chat]):
             .options(selectinload(Chat.messages))
         )
         return result.scalars().first()
+    
+    async def get_average_satisfaction_level(self) -> float:
+        query = select(func.avg(Chat.satisfaction_level))
+        result = await self.session.execute(query)
+        average = result.scalar_one()
+        return average if average is not None else 0.0
 
     async def create(self, chat: Chat) -> Chat:
         self.session.add(chat)
