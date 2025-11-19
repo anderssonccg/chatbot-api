@@ -1,6 +1,6 @@
 from typing import Optional
 from datetime import datetime
-from sqlmodel import Relationship, SQLModel, Field
+from sqlmodel import Column, ForeignKey, Integer, Relationship, SQLModel, Field
 from enum import Enum
 from models.chat import Chat
 
@@ -30,7 +30,9 @@ class MessageRead(MessageBase):
 
 class Message(MessageBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    chat_id: int = Field(default=None, foreign_key="chat.id")
+    chat_id: int = Field(
+        sa_column=Column(Integer, ForeignKey("chat.id", ondelete="CASCADE"))
+    )
     role: MessageRole
     texto: str = Field(default=None)
     fecha: datetime = Field(default_factory=datetime.utcnow)

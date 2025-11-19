@@ -35,4 +35,10 @@ class Chat(ChatBase, table=True):
     satisfaction_level: Optional[int] = Field(default=None, ge=1, le=5)
     user_id: int = Field(default=None, foreign_key="user.id")
     user: User = Relationship(back_populates="chats")
-    messages: list["Message"] = Relationship(back_populates="chat")
+    messages: list["Message"] = Relationship(
+        back_populates="chat",
+        sa_relationship_kwargs={
+            "cascade": "all, delete-orphan",
+            "passive_deletes": True
+        }
+    )
