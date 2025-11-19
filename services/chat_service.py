@@ -24,7 +24,7 @@ class ChatService:
             )
         return ChatRead.model_validate(chat)
 
-    async def create(self, chat: ChatCreate) -> ChatRead:
+    async def create(self, chat: ChatCreate) -> Chat:
         chat = Chat.model_validate(chat.dict())
         chat_created = await self.chat_repository.create(chat)
         return ChatRead.model_validate(chat_created)
