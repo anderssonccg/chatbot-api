@@ -17,6 +17,7 @@ class ChatCreate(ChatBase):
 
 class ChatUpdate(SQLModel):
     titulo: Optional[str] = None
+    satisfaction_level: Optional[int] = Field(default=None, ge=1, le=5)
 
 
 class ChatRead(ChatBase):
@@ -24,6 +25,7 @@ class ChatRead(ChatBase):
     titulo: str
     fecha: datetime
     user_id: int
+    satisfaction_level: Optional[int] = None
     messages: list[Any] = []
 
 class Chat(ChatBase, table=True):

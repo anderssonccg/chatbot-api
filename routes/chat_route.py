@@ -8,8 +8,9 @@ from dependencies import get_chat_service, get_current_user, get_message_service
 from models.message import MessageCreate
 from models.user import User
 from sqlmodel import select
+from services.chat_service import ChatService
 from utils import auth
-from models.chat import ChatCreate, ChatRead
+from models.chat import ChatCreate, ChatRead, ChatUpdate
 from datetime import datetime
 
 router = APIRouter()
@@ -18,10 +19,27 @@ client = genai.Client()
 @router.get("/chats", response_model=List[ChatRead])
 async def get_chats(
     user: User = Depends(get_current_user),
-    service = Depends(get_chat_service),
+    service: ChatService = Depends(get_chat_service),
 ):
     return await service.get_all_chats_by_user(user.id)
 
+@router.get("/chats/{chat_id}", response_model=ChatRead)
+async def get_chat_by_id(
+    chat_id: int,
+    user: User = Depends(get_current_user),
+    service: ChatService = Depends(get_chat_service),
+):
+    return await service.get_by_id(chat_id)
+
+@router.put("/chats/{chat_id}", response_model=ChatRead)
+async def update_satisfaction_level(
+    chat_id: int,
+    chat_data: ChatUpdate,
+    user: User = Depends(get_current_user),
+    service: ChatService = Depends(get_chat_service),
+):
+    return await service.update(chat_id, chat_data)
+    
 
 @router.websocket("/ws/chat")
 async def websocket_chat_endpoint(websocket: WebSocket):

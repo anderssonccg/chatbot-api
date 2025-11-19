@@ -23,7 +23,11 @@ class ChatRepository(IRepository[Chat]):
         return result.scalars().all()
 
     async def get(self, id: int) -> Optional[Chat]:
-        result = await self.session.execute(select(Chat).where(Chat.id == id))
+        result = await self.session.execute(
+            select(Chat)
+            .where(Chat.id == id)
+            .options(selectinload(Chat.messages))
+        )
         return result.scalars().first()
 
     async def create(self, chat: Chat) -> Chat:
@@ -38,6 +42,7 @@ class ChatRepository(IRepository[Chat]):
             chat.sqlmodel_update(chat_data)
             await self.session.commit()
             await self.session.refresh(chat)
+            chat = await self.get(id)
             return chat
         return None
 
