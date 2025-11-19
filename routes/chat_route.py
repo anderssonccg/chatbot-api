@@ -1,18 +1,27 @@
 import io
+from typing import List
 import httpx
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from google import genai
 from config.db import AsyncSessionLocal
-from dependencies import get_chat_service, get_message_service, get_resource_service
+from dependencies import get_chat_service, get_current_user, get_message_service, get_resource_service
 from models.message import MessageCreate
 from models.user import User
 from sqlmodel import select
 from utils import auth
-from models.chat import ChatCreate
+from models.chat import ChatCreate, ChatRead
 from datetime import datetime
 
 router = APIRouter()
 client = genai.Client()
+
+@router.get("/chats", response_model=List[ChatRead])
+async def get_chats(
+    user: User = Depends(get_current_user),
+    service = Depends(get_chat_service),
+):
+    return await service.get_all_chats_by_user(user.id)
+
 
 @router.websocket("/ws/chat")
 async def websocket_chat_endpoint(websocket: WebSocket):

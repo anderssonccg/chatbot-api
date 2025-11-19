@@ -1,5 +1,6 @@
 from typing import List, Optional
 from sqlmodel import select
+from sqlalchemy.orm import selectinload
 from config.db import SessionDep
 from models.chat import Chat
 from repositories.repository_interface import IRepository
@@ -10,7 +11,11 @@ class ChatRepository(IRepository[Chat]):
         self.session = session
 
     async def get_by_user(self, user_id: int) -> List[Chat]:
-        result = await self.session.execute(select(Chat).where(Chat.user_id == user_id))
+        result = await self.session.execute(
+            select(Chat)
+            .where(Chat.user_id == user_id)
+            .options(selectinload(Chat.messages))
+        )
         return result.scalars().all()
 
     async def get_all(self) -> List[Chat]:

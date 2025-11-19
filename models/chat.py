@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Any
 from datetime import datetime
 from sqlmodel import Relationship, SQLModel, Field
 from models.user import User
@@ -24,7 +24,7 @@ class ChatRead(ChatBase):
     titulo: str
     fecha: datetime
     user_id: int
-
+    messages: list[Any] = []
 
 class Chat(ChatBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
